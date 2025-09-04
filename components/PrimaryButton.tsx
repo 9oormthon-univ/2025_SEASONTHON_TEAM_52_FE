@@ -3,12 +3,18 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type PrimaryButtonProps = {
   text?: string;
   active?: boolean;
+  onPress?: () => void; // ✅ onPress 추가
 };
 
-const PrimaryButton = ({ text = "", active = true }: PrimaryButtonProps) => {
+const PrimaryButton = ({
+  text = "",
+  active = true,
+  onPress,
+}: PrimaryButtonProps) => {
   return (
     <Pressable
       style={[styles.button, active ? styles.active : styles.inactive]}
+      onPress={active ? onPress : undefined} // ✅ active가 false면 동작 막기
     >
       <Text
         style={[styles.text, active ? styles.textActive : styles.textInactive]}

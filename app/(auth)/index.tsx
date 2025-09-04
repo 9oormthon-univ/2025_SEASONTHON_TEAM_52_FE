@@ -6,8 +6,10 @@ import PrimaryButton from "../../components/PrimaryButton";
 import Checkbox from "expo-checkbox";
 import colors from "../styles/colors";
 import { TEXT } from "../../constants/TextStyles";
+import { useRouter } from "expo-router"; // ⚠️ 테스트용: login page -> onboarding page
 
 const AuthIndex = () => {
+  const router = useRouter(); // ⚠️ 테스트용: login page -> onboarding page
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setChecked] = useState(false);
@@ -52,7 +54,10 @@ const AuthIndex = () => {
           자동 로그인
         </Text>
       </View>
-      <PrimaryButton text="로그인" />
+      <PrimaryButton
+        onPress={() => router.replace("/onboarding/1")} // ⚠️ 테스트용: login page -> onboarding page
+        text="로그인"
+      />
       <View
         style={{
           flexDirection: "row",
