@@ -54,26 +54,19 @@ const MOCK_REGIONS = [
 
 export default function Step5Region({ answers, setAnswers }) {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string | null>(null);
   const router = useRouter();
 
-  const filtered = MOCK_REGIONS.filter(
-    (r) => r.includes(query) && !selected.includes(r) // 이미 선택된건 제외
-  );
+  const filtered = MOCK_REGIONS.filter((r) => r.includes(query));
 
   const handleSelect = (region: string) => {
-    if (!selected.includes(region)) {
-      const updated = [...selected, region];
-      setSelected(updated);
-      setAnswers((prev) => ({ ...prev, regions: updated }));
-    }
-    setQuery(""); // 선택 후 검색창 초기화
+    setSelected(region);
+    setAnswers((prev: any) => ({ ...prev, region }));
   };
 
-  const handleRemove = (region: string) => {
-    const updated = selected.filter((r) => r !== region);
-    setSelected(updated);
-    setAnswers((prev) => ({ ...prev, regions: updated }));
+  const handleRemove = () => {
+    setSelected(null);
+    setAnswers((prev: any) => ({ ...prev, region: "" }));
   };
 
   return (
@@ -103,24 +96,22 @@ export default function Step5Region({ answers, setAnswers }) {
       </View>
 
       {/* 선택된 지역들 */}
-      {selected.length > 0 && (
+      {selected && (
         <View style={styles.selectedWrap}>
-          {selected.map((region) => (
-            <View key={region} style={styles.selectedTag}>
-              <Ionicons name="checkmark" size={20} color={colors.mainColor} />
-              <Text style={[TEXT.body3, { color: colors.blackSub1 }]}>
-                {region}
-              </Text>
-              <TouchableOpacity onPress={() => handleRemove(region)}>
-                <Ionicons name="close" size={20} color={colors.blackSub1} />
-              </TouchableOpacity>
-            </View>
-          ))}
+          <View style={styles.selectedTag}>
+            <Ionicons name="checkmark" size={20} color={colors.mainColor} />
+            <Text style={[TEXT.body3, { color: colors.blackSub1 }]}>
+              {selected}
+            </Text>
+            <TouchableOpacity onPress={handleRemove}>
+              <Ionicons name="close" size={20} color={colors.blackSub1} />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
       {/* 검색 결과 */}
-      {query.length > 0 && (
+      {!selected && query.length > 0 && (
         <FlatList
           data={filtered}
           keyExtractor={(item) => item}
@@ -139,20 +130,20 @@ export default function Step5Region({ answers, setAnswers }) {
 
       {/* 다음 버튼 */}
       <TouchableOpacity
-        disabled={selected.length === 0}
+        disabled={!selected}
         style={[
           styles.nextBtn,
-          selected.length === 0 && { backgroundColor: colors.blackSub4 },
+          !selected && { backgroundColor: colors.blackSub4 },
         ]}
         onPress={() => {
           console.log("최종 답변:", answers);
-          router.replace("/home");
+          router.replace("/(tab)/(home)");
         }}
       >
         <Text
           style={[
             TEXT.body22,
-            { color: selected.length > 0 ? colors.white : colors.blackSub1 },
+            { color: selected ? colors.white : colors.blackSub1 },
           ]}
         >
           다음
@@ -177,7 +168,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    marginBottom: 25,
+    marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -187,6 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+    marginTop: 10,
     marginBottom: 12,
   },
   selectedTag: {
