@@ -6,8 +6,9 @@ export const TEXT = StyleSheet.create({
     fontFamily: "Ownglyph",
     fontWeight: 400,
     fontSize: 48,
-    lineHeight: 150,
+    lineHeight: 72,
     color: "#FF6A00",
+    letterSpacing: 3.12,
   },
   // 헤드라인 1
   head1: {
@@ -60,6 +61,6 @@ export const TEXT = StyleSheet.create({
     fontFamily: "Pretendard",
     fontWeight: 500,
     fontSize: 12,
-    lineHeight: "150%",
+    lineHeight: 18,
   },
 });
