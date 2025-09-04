@@ -4,6 +4,10 @@ export const TEXT = StyleSheet.create({
   // 로고
   logo: {
     fontFamily: "Ownglyph",
+    fontWeight: 400,
+    fontSize: 48,
+    lineHeight: 150,
+    color: "#FF6A00",
   },
   // 헤드라인 1
   head1: {
@@ -56,6 +60,6 @@ export const TEXT = StyleSheet.create({
     fontFamily: "Pretendard",
     fontWeight: 500,
     fontSize: 12,
-    lineHeight: 18,
+    lineHeight: "150%",
   },
 });
