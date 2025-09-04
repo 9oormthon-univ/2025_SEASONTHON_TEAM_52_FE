@@ -10,7 +10,7 @@ export const TEXT = StyleSheet.create({
     fontFamily: "Pretendard",
     fontWeight: 700,
     fontSize: 32,
-    lineHeight: 40,
+    lineHeight: 48,
   },
   // 헤드라인 2
   head2: {
@@ -22,10 +22,9 @@ export const TEXT = StyleSheet.create({
   // 타이틀
   title1: {
     fontFamily: "Pretendard",
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: 20,
-    lineHeight: 28,
-    letterSpacing: -2,
+    lineHeight: 30,
   },
   // body
   body1: {
@@ -51,12 +50,12 @@ export const TEXT = StyleSheet.create({
     fontFamily: "Pretendard",
     fontWeight: 500,
     fontSize: 14,
-    lineHeight: 24,
+    lineHeight: 21,
   },
   body4: {
     fontFamily: "Pretendard",
     fontWeight: 500,
     fontSize: 12,
-    lineHeight: "150%",
+    lineHeight: 18,
   },
 });
