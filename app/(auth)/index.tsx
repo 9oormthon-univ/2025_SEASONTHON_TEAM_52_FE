@@ -17,7 +17,7 @@ const AuthIndex = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ paddingTop: 55, paddingBottom: 12 }}>
-        <Text style={TEXT.logo}>오손도손</Text>
+        <Text style={[TEXT.logo, { fontSize: 48 }]}>오손도손</Text>
       </View>
       <View style={{ gap: 6, flexDirection: "column", paddingBottom: 12 }}>
         <Text style={TEXT.head2}>{`안녕하세요 :)`}</Text>

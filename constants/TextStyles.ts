@@ -5,7 +5,6 @@ export const TEXT = StyleSheet.create({
   logo: {
     fontFamily: "Ownglyph",
     fontWeight: 400,
-    fontSize: 48,
     lineHeight: 72,
     color: "#FF6A00",
     letterSpacing: 3.12,
