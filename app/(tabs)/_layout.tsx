@@ -1,22 +1,21 @@
 import { Slot, usePathname } from "expo-router";
-import { View, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, StyleSheet, Dimensions } from "react-native";
 import TabBar from "../../components/TabBar";
+
+const { height } = Dimensions.get("window");
 
 export default function TabsLayout() {
   const pathname = usePathname();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Slot />
-          {/* Home, Matching, Progress 등 현재 탭 */}
-        </View>
-        <TabBar />
-        {/* 항상 하단 고정 */}
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Slot />
+        {/* Home, Matching, Progress 등 현재 탭 */}
       </View>
-    </SafeAreaView>
+      <TabBar style={styles.tab} />
+      {/* 항상 하단 고정 */}
+    </View>
   );
 }
 
@@ -26,5 +25,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  tab: {
+    top: height * 0.88,
+    left: 0,
+    right: 0,
+    position: "absolute",
   },
 });
