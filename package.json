@@ -10,17 +10,18 @@
   },
   "dependencies": {
     "expo": "~53.0.22",
+    "expo-checkbox": "~4.1.4",
+    "expo-font": "~13.3.2",
     "expo-router": "^5.1.4",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.6",
-    "expo-font": "~13.3.2",
-    "expo-checkbox": "~4.1.4"
+    "react-native-svg": "15.11.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "typescript": "~5.8.3",
-    "@types/react": "~19.0.10"
+    "react-native-svg-transformer": "^1.5.1",
+    "typescript": "~5.8.3"
   },
   "private": true,
   "expo": {
