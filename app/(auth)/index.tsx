@@ -120,7 +120,10 @@ const AuthIndex = () => {
             구글 로그인
           </Text>
         </Pressable>
-        <Pressable style={styles.naver}>
+        <Pressable
+          style={styles.naver}
+          onPress={() => router.push("(tabs)/(home)")}
+        >
           <Image
             source={require("../../assets/icon/Naver.png")}
             style={{ width: 32, height: 32 }}

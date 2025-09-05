@@ -137,7 +137,7 @@ export default function Step5Region({ answers, setAnswers }) {
         ]}
         onPress={() => {
           console.log("최종 답변:", answers);
-          router.replace("/(tabs)/Home");
+          router.replace("/(tabs)/(home)");
         }}
       >
         <Text
