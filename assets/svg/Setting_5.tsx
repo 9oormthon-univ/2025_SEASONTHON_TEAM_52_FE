@@ -5,7 +5,7 @@ export default function Setting_5(props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
       <G stroke="none" strokeWidth={1} fill="none" fillRule="evenodd">
-        <Rect fill="#FFFFFF" x={0} y={0} width={24} height={24} />
+        <Rect fill="transparent" x={0} y={0} width={24} height={24} />
         <G
           transform="translate(5, 5)"
           stroke={props.stroke}
