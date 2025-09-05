@@ -10,6 +10,7 @@ import {
   NativeSyntheticEvent,
   Pressable,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import Pencil_Edit from "../../../assets/svg/Pencil_Edit";
 import colors from "../../styles/colors";
@@ -96,8 +97,9 @@ const CARD_WIDTH = 260;
 const CARD_SPACING = 20;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING;
 export default function MatchingScreen() {
+  const router = useRouter();
   const [selectedBuilding, setSelectedBuilding] = useState<string>("아파트");
-  const [haveRoom, setHaveRoom] = useState<Boolean>(false);
+  const [haveRoom, setHaveRoom] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
 
   const handleScroll = (e: any) => {
@@ -160,7 +162,10 @@ export default function MatchingScreen() {
         <View style={styles.tabHeader}>
           <Pressable
             onPress={() => setHaveRoom(false)}
-            style={[styles.tabButton, haveRoom || styles.tabButtonActivated]}
+            style={[
+              styles.tabButton,
+              !haveRoom ? styles.tabButtonActivated : undefined,
+            ]}
           >
             <Text
               style={
@@ -193,8 +198,16 @@ export default function MatchingScreen() {
         {/* 매칭 섹션 */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>구름님과 매칭률이 높아요</Text>
-          <Text style={styles.more}>더보기 </Text>
-          <Right_Arrow stroke={colors.blackSub1} />
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+            onPress={() => router.push("/(tabs)/(matching)/list")}
+          >
+            <Text style={styles.more}>더보기 </Text>
+            <Right_Arrow stroke={colors.blackSub1} />
+          </Pressable>
         </View>
         <FlatList
           data={haveRoom ? cardsWithRoom : cards}
@@ -238,20 +251,26 @@ export default function MatchingScreen() {
                 ))}
               </View>
               <Text style={[TEXT.body4, styles.desc]}>
-                {haveRoom
+                {haveRoom && "area" in item && "building" in item
                   ? `${item.region} ${item.area}평 ${item.building}에서 같이 살 룸메 찾아요!`
                   : `${item.region} 근처에서 같이 살 룸메 찾아요!`}
               </Text>
               {haveRoom && (
                 <Text style={[TEXT.body4, styles.desc2]}>
-                  보증금 {item.deposit} / 월세 {item.rent}
+                  보증금{" "}
+                  {"deposit" in item && item.deposit !== undefined
+                    ? String(item.deposit)
+                    : ""}{" "}
+                  / 월세{" "}
+                  {"rent" in item && item.rent !== undefined
+                    ? String(item.rent)
+                    : ""}
                 </Text>
               )}
             </View>
           )}
         />
 
-        {/* 페이지 인디케이터 */}
         <View style={styles.indicatorRow}>
           {cards.map((_, i) => (
             <View
