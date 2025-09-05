@@ -11,15 +11,11 @@ const PrimaryButton = ({
   active = true,
   onPress,
 }: PrimaryButtonProps) => {
-const PrimaryButton = ({
-  text = "",
-  active = true,
-  onPress,
-}: PrimaryButtonProps) => {
   return (
     <Pressable
       style={[styles.button, active ? styles.active : styles.inactive]}
       onPress={onPress}
+      disabled={!active} // 비활성화일 때 눌리지 않게
     >
       <Text
         style={[styles.text, active ? styles.textActive : styles.textInactive]}
