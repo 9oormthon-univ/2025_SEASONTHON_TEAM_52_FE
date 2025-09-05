@@ -55,8 +55,8 @@ const AuthIndex = () => {
         </Text>
       </View>
       <PrimaryButton
-        onPress={() => router.replace("/onboarding/1")} // ⚠️ 테스트용: login page -> onboarding page
         text="로그인"
+        onPress={() => router.push("/onboarding/[step]")}
       />
       <View
         style={{
