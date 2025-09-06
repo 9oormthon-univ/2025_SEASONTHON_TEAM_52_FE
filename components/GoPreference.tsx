@@ -9,10 +9,14 @@ const GoPreference = () => {
     <View
       style={{
         backgroundColor: "rgba(255, 243, 234, 0.85)",
-        height: 320,
-        width: "100%",
+        height: 340,
+        width: 420,
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 1,
+        position: "absolute",
+        alignSelf: "center",
+        marginTop: 20,
       }}
     >
       <Image

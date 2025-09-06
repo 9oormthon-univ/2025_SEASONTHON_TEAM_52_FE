@@ -20,6 +20,7 @@ import Down_Arrow_5 from "../../../assets/svg/Down_Arrow_5";
 import { TEXT } from "../../../constants/TextStyles";
 import { useState, useEffect } from "react";
 import Right_Arrow from "../../../assets/svg/Right_Arrow";
+import GoPreference from "../../../components/GoPreference";
 
 const { width } = Dimensions.get("window");
 
@@ -463,6 +464,10 @@ export default function MatchingScreen() {
             <Right_Arrow stroke={colors.blackSub1} />
           </Pressable>
         </View>
+
+        {/**지우면 됨 */}
+        {/*      <GoPreference />*/}
+
         <FlatList
           data={haveRoom ? roomPosts : roommatePosts}
           style={{ marginInline: -20 }}
@@ -749,13 +754,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 125,
     marginHorizontal: 10,
-    backgroundColor: colors.mainColor,
+    borderColor: colors.mainColor,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
   },
   ctaText: {
-    color: "#fff",
+    color: colors.mainColor,
     fontSize: 15,
     fontWeight: "600",
   },
