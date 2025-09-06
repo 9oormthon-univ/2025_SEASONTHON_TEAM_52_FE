@@ -4,6 +4,7 @@ const colors = {
   mainSub1: "#FFDEC7",
   mainSub2: "#FFEFE2",
   subColor: "#3A87FF", // 보조 색
+  subColor2: "#E1ECFF",
   black: "#1F1F1F",
   blackSub1: "#8C8C8C",
   blackSub2: "#C5C5C5",

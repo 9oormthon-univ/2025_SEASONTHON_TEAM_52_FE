@@ -46,7 +46,7 @@ export const TEXT = StyleSheet.create({
   // body2.5
   body22: {
     fontFamily: "Pretendard",
-    fontWeight: 500,
+    fontWeight: 700,
     fontSize: 16,
     lineHeight: 24,
   },
