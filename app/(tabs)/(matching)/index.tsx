@@ -18,11 +18,58 @@ import colors from "../../styles/colors";
 import Heart from "../../../assets/svg/Heart";
 import Down_Arrow_5 from "../../../assets/svg/Down_Arrow_5";
 import { TEXT } from "../../../constants/TextStyles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Right_Arrow from "../../../assets/svg/Right_Arrow";
-import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
+
+const CodeToKorean = {
+  11680106: "강남구 대치동",
+  11680103: "강남구 개포동",
+  11680111: "강남구 세곡동",
+  11680107: "강남구 신사동",
+  11680110: "강남구 압구정동",
+  11680113: "강남구 율현동",
+  11680114: "강남구 일원동",
+  11680112: "강남구 자곡동",
+  11680115: "강남구 수서동",
+  11680105: "강남구 삼성동",
+  11680108: "강남구 논현동",
+  11680101: "강남구 역삼동",
+  11680104: "강남구 청담동",
+  11680118: "강남구 도곡동",
+  11215105: "광진구 자양동",
+  11215103: "광진구 구의동",
+  11215107: "광진구 화양동",
+  11215102: "광진구 능동",
+  11215104: "광진구 광장동",
+  11215109: "광진구 군자동",
+  11215101: "광진구 중곡동",
+};
+
+const KoreanToCode = {
+  대치동: 11680106,
+  개포동: 11680103,
+  세곡동: 11680111,
+  신사동: 11680107,
+  압구정동: 11680110,
+  율현동: 11680113,
+  일원동: 11680114,
+  자곡동: 11680112,
+  수서동: 11680115,
+  삼성동: 11680105,
+  논현동: 11680108,
+  역삼동: 11680101,
+  청담동: 11680104,
+  도곡동: 11680118,
+  자양동: 11215105,
+  구의동: 11215103,
+  화양동: 11215107,
+  능동: 11215102,
+  광장동: 11215104,
+  군자동: 11215109,
+  중곡동: 11215101,
+};
 
 const UserData = {
   gu: "영등포구",
@@ -59,50 +106,122 @@ const cards = [
 ];
 const cardsWithRoom = [
   {
-    id: 4,
-    name: "건물주",
-    age: 26,
-    mbti: "ESFJ",
-    tags: ["비흡연", "22시 이전", "청소 자주", "둔함", "대부분 외출"],
-    region: "영등포구",
-    area: 25,
-    building: "아파트",
-    deposit: 1000,
-    rent: 70,
-  },
-  {
-    id: 5,
-    name: "건물주",
-    age: 26,
-    mbti: "ESFJ",
-    tags: ["비흡연", "22시 이전", "청소 자주", "둔함", "대부분 외출"],
-    region: "영등포구",
-    area: 21,
-    building: "빌라",
-    deposit: 800,
-    rent: 60,
-  },
-  {
-    id: 6,
-    name: "건물주",
-    age: 26,
-    mbti: "ESFJ",
-    tags: ["비흡연", "22시 이전", "청소 자주", "둔함", "대부분 외출"],
-    region: "영등포구",
-    area: 29,
-    building: "오피스텔",
-    deposit: 1300,
-    rent: 70,
+    roommatePostId: 0,
+    userId: 0,
+    username: "string",
+    userProfile: "string",
+    age: 0,
+    mbti: "ENFP",
+    score: 0,
+    matchedOptions: {
+      lifeCycle: "MORNING",
+      smoking: "NON_SMOKER",
+      cleanFreq: "OFTEN",
+      tidyLevel: "STRICT",
+      visitorPolicy: "ALLOWED",
+      restroomUsagePattern: "MORNING_SHOWER",
+      foodOdorPolicy: "ALLOWED",
+      homeStay: "MOSTLY_OUT",
+      noisePreference: "ALWAYS_QUIET",
+      sleepSensitivity: "SENSITIVE",
+    },
+    title: "string",
+    deposit: 0,
+    monthlyRent: 0,
   },
 ];
 const CARD_WIDTH = 260;
 const CARD_SPACING = 20;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING;
+
+const emptyProfile = {
+  userId: 1,
+  username: "두둥탁",
+  age: 25,
+  gender: "MALE",
+  introduction: "안녕하세요! 깔끔하고 조용한 룸메이트를 찾고 있습니다.",
+  preferredLocationEmdCd: "1168010100",
+  hasSpace: false,
+  kakaoOpenChatLink: "https://open.kakao.com/...",
+  isActive: false,
+  lifeCycle: "MORNING",
+  tidyLevel: "STRICT",
+  smoking: "NON_SMOKER",
+  noisePreference: "ALWAYS_QUIET",
+  isDesired: true,
+};
+
 export default function MatchingScreen() {
   const router = useRouter();
-  const [selectedBuilding, setSelectedBuilding] = useState<string>("아파트");
   const [haveRoom, setHaveRoom] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
+
+  const [profile, setProfile] = useState(emptyProfile);
+  const [roomPosts, setRoomPosts] = useState(cardsWithRoom);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const res = await fetch("http://13.209.184.54:8080/auth/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // 필요하다면 Authorization 헤더 추가
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("프로필 불러오기 실패");
+        }
+
+        const data = await res.json();
+        console.log("서버 응답:", data);
+
+        // 서버 응답이 emptyProfile과 같은 형식이라고 가정
+        setProfile(data);
+      } catch (err) {
+        // fallback
+        console.error("프로필 fetch 실패:", err);
+        setProfile(emptyProfile);
+      }
+    };
+
+    getProfile();
+  }, []);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const res = await fetch(
+          `http://13.209.184.54:8080/recommendations/room-posts?area=${
+            CodeToKorean[profile.preferredLocationEmdCd]
+          }`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // 필요하다면 Authorization 헤더 추가
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("프로필 불러오기 실패");
+        }
+
+        const data = await res.json();
+        console.log("서버 응답:", data.data);
+
+        // 서버 응답이 emptyProfile과 같은 형식이라고 가정
+        setRoomPosts(data.data);
+      } catch (err) {
+        // fallback
+        console.error("포스트 fetch 실패:", err);
+      }
+    };
+
+    getProfile();
+  }, []);
 
   const handleScroll = (e: any) => {
     const offsetX = e.nativeEvent.contentOffset.x;
@@ -121,7 +240,7 @@ export default function MatchingScreen() {
         <View style={styles.header}>
           <Pressable onPress={() => router.push("/(map)")}>
             <Text style={styles.location}>
-              {UserData.gu} {UserData.dong}
+              {CodeToKorean[profile.preferredLocationEmdCd]}
             </Text>
           </Pressable>
           <Down_Arrow_5 stroke={colors.black} style={{ marginRight: "auto" }} />
@@ -239,9 +358,9 @@ export default function MatchingScreen() {
           </Pressable>
         </View>
         <FlatList
-          data={haveRoom ? cardsWithRoom : cards}
+          data={haveRoom ? roomPosts : roomPosts}
           style={{ marginInline: -20 }}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.roommatePostId.toString()}
           horizontal
           decelerationRate="fast"
           snapToInterval={295} // 카드 너비(260) + margin(20) + 뭔지 모를 수치 15
@@ -262,7 +381,9 @@ export default function MatchingScreen() {
               <View style={styles.profile}>
                 <View style={styles.avatar} />
                 <View style={styles.nameAndDetail}>
-                  <Text style={[TEXT.body22, styles.name]}>{item.name}</Text>
+                  <Text style={[TEXT.body22, styles.name]}>
+                    {item.username}
+                  </Text>
                   <Text style={[TEXT.body3, styles.sub]}>
                     {item.age}세 · {item.mbti}
                   </Text>
@@ -273,7 +394,7 @@ export default function MatchingScreen() {
               </View>
               <Text style={[TEXT.body4, styles.tagLabel]}>비슷한 성향</Text>
               <View style={styles.tagsRow}>
-                {item.tags.map((tag, i) => (
+                {Object.entries(item.matchedOptions).map((tag, i) => (
                   <View key={i} style={styles.tag}>
                     <Text style={[TEXT.body4, styles.tagText]}>{tag}</Text>
                   </View>
@@ -281,8 +402,12 @@ export default function MatchingScreen() {
               </View>
               <Text style={[TEXT.body4, styles.desc]}>
                 {haveRoom && "area" in item && "building" in item
-                  ? `${item.region} ${item.area}평 ${item.building}에서 같이 살 룸메 찾아요!`
-                  : `${item.region} 근처에서 같이 살 룸메 찾아요!`}
+                  ? `${CodeToKorean[profile.preferredLocationEmdCd]} ${
+                      item.area
+                    }평 ${item.building}에서 같이 살 룸메 찾아요!`
+                  : `${
+                      CodeToKorean[profile.preferredLocationEmdCd]
+                    } 근처에서 같이 살 룸메 찾아요!`}
               </Text>
               {haveRoom && (
                 <Text style={[TEXT.body4, styles.desc2]}>

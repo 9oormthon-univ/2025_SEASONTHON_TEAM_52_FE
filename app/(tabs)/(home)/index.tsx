@@ -62,12 +62,10 @@ const Home = () => {
         }
 
         const data = await res.json();
-        console.log("서버 응답:", data);
 
         // 서버 응답이 emptyProfile과 같은 형식이라고 가정
         setProfile(data);
       } catch (err) {
-        console.error("프로필 요청 에러:", err);
         // fallback
         setProfile(emptyProfile);
       }

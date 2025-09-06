@@ -60,7 +60,7 @@ const AuthIndex = () => {
           await fetch("http://13.209.184.54:8080/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: "두둥탁10" }),
+            body: JSON.stringify({ username: "서지우" }),
           });
 
           const profileData = await fetch(
