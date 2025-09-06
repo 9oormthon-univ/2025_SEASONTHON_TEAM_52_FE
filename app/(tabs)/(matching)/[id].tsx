@@ -17,7 +17,7 @@ import Right_Arrow from "../../../assets/svg/Right_Arrow";
 
 const reviews = [
   {
-    id: 1,
+    id: 111,
     name: "박**",
     rating: 5,
     livedMonth: 3,
@@ -26,7 +26,7 @@ const reviews = [
     date: "2025.06.02",
   },
   {
-    id: 2,
+    id: 211,
     name: "김**",
     rating: 4,
     livedMonth: 12,
