@@ -19,6 +19,7 @@ import Down_Arrow_5 from "../../../assets/svg/Down_Arrow_5";
 import { TEXT } from "../../../constants/TextStyles";
 import { useState } from "react";
 import Right_Arrow from "../../../assets/svg/Right_Arrow";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -123,7 +124,9 @@ export default function MatchingScreen() {
           <Down_Arrow_5 stroke={colors.black} style={{ marginRight: "auto" }} />
           <View style={styles.headerIcons}>
             <Heart stroke={colors.black} />
-            <Pencil_Edit stroke={colors.black} />
+            <Pressable onPress={() => router.push("recruit/SelectType")}>
+              <Pencil_Edit stroke={colors.black} />
+            </Pressable>
           </View>
         </View>
 

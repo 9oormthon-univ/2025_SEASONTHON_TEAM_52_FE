@@ -1,19 +1,27 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 type PrimaryButtonProps = {
   text?: string;
   active?: boolean;
   onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
 const PrimaryButton = ({
   text = "",
   active = true,
   onPress,
+  style, // ✅ props에서 꺼내기
 }: PrimaryButtonProps) => {
   return (
     <Pressable
-      style={[styles.button, active ? styles.active : styles.inactive]}
+      style={[styles.button, active ? styles.active : styles.inactive, style]} // ✅ 적용됨
       onPress={onPress}
       disabled={!active}
     >

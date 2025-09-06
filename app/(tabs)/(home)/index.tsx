@@ -5,6 +5,7 @@ import {
   Dimensions,
   ScrollView,
   Image,
+  Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { TEXT } from "../../../constants/TextStyles";
@@ -15,12 +16,16 @@ import MapPin from "../../../assets/svg/MainPin";
 import ChevronRight from "../../../assets/svg/ChevronRight";
 import * as Progress from "react-native-progress";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useState } from "react";
 
 const { height } = Dimensions.get("window");
 const { width } = Dimensions.get("window");
 //shadow 수정 필요
 
 const Home = () => {
+  const [isRoommate, setIsRoommate] = useState(false);
+
   const insets = useSafeAreaInsets();
   const TAB_HEIGHT = 20;
   return (
@@ -50,25 +55,37 @@ const Home = () => {
           overScrollMode="never"
         >
           {/* 룸메이트 성향 입력 */}
-          <View style={styles.roommateBox}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 33.94 }}
+          {isRoommate === false && (
+            <Pressable
+              style={styles.roommateBox}
+              onPress={() => {
+                router.push("/preferences/1");
+                setIsRoommate(true);
+              }}
             >
-              <Image
-                source={require("../../../assets/icon/Write.png")}
-                style={{ width: 75.82, height: 63.18 }}
-              />
-              <View>
-                <Text style={[TEXT.body4, { color: colors.blackSub1 }]}>
-                  성향 매칭을 위해서는 필수예요
-                </Text>
-                <Text
-                  style={[TEXT.body22]}
-                >{`내가 원하는\n룸메이트 성향 입력하기`}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 33.94,
+                }}
+              >
+                <Image
+                  source={require("../../../assets/icon/Write.png")}
+                  style={{ width: 75.82, height: 63.18 }}
+                />
+                <View>
+                  <Text style={[TEXT.body4, { color: colors.blackSub1 }]}>
+                    성향 매칭을 위해서는 필수예요
+                  </Text>
+                  <Text
+                    style={[TEXT.body22]}
+                  >{`내가 원하는\n룸메이트 성향 입력하기`}</Text>
+                </View>
+                <ChevronRight style={{ marginLeft: 8 }} />
               </View>
-              <ChevronRight style={{ marginLeft: 8 }} />
-            </View>
-          </View>
+            </Pressable>
+          )}
 
           {/* 룸메이트 찾기 */}
           <View style={styles.contentBox}>
