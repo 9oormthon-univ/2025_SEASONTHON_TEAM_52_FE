@@ -105,7 +105,7 @@ const RcWrite = () => {
   const [isChecked2, setChecked2] = useState(false);
 
   const [houseType, setHouseType] = useState<string>();
-  const [moveIn, setMoveIn] = useState<string>();
+  const [moveInDate, setMoveInDate] = useState<string>();
   const [minStay, setMinStay] = useState<string>();
 
   const [desc, setDesc] = useState("");
@@ -115,6 +115,8 @@ const RcWrite = () => {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const MAX_PHOTOS = 10;
   const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const hasDeposit = deposit.trim().length > 0 || isChecked; // 보증금 협의가능
+  const hasRent = rent.trim().length > 0 || isChecked2;
 
   const [place, setPlace] = useState<{
     lat: number;
@@ -125,10 +127,10 @@ const RcWrite = () => {
 
   const isFormValid =
     title.trim().length > 0 &&
-    deposit.trim().length > 0 &&
-    rent.trim().length > 0 &&
+    hasDeposit &&
+    hasRent &&
     !!houseType &&
-    !!moveIn &&
+    !!moveInDate &&
     !!minStay;
 
   const pickImages = async () => {
@@ -158,6 +160,38 @@ const RcWrite = () => {
     setPhotos((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const mapHouseType: Record<
+    string,
+    "APARTMENT" | "OFFICETEL" | "VILLA" | "SHARE_HOUSE" | "OTHER"
+  > = {
+    아파트: "APARTMENT",
+    오피스텔: "OFFICETEL",
+    "빌라 / 주택": "VILLA",
+    셰어하우스: "SHARE_HOUSE",
+    기타: "OTHER",
+  };
+
+  function toMoveInQuarter(v?: string): "Q1" | "Q2" | "Q3" | "Q4" | null {
+    switch (v) {
+      case "1개월 이내":
+        return "Q1";
+      case "3개월":
+        return "Q1";
+      case "6개월":
+        return "Q2";
+      case "12개월 이상":
+        return "Q4";
+      default:
+        return null;
+    }
+  }
+
+  function toMinStayMonths(v?: string): number | null {
+    if (!v || v === "상관없음") return null;
+    if (v === "12개월 이상") return 12;
+    const m = v.match(/\d+/);
+    return m ? Number(m[0]) : null;
+  }
   const houseTypeOptions = [
     "아파트",
     "오피스텔",
@@ -176,6 +210,77 @@ const RcWrite = () => {
   const minStayOptions = ["1개월", "3개월", "6개월", "12개월 이상", "상관없음"];
 
   const insets = useSafeAreaInsets();
+
+  const handleSubmit = async () => {
+    if (!isFormValid) return;
+
+    const maybe = <T extends Record<string, any>>(obj: T) =>
+      Object.fromEntries(
+        Object.entries(obj).filter(([, v]) => v !== null && v !== undefined)
+      );
+
+    const depositVal = deposit.trim() ? Number(deposit) : null;
+    const rentVal = rent.trim() ? Number(rent) : null;
+    const stayVal =
+      minStay && minStay !== "상관없음" ? toMinStayMonths(minStay) : null;
+
+    const payload = maybe({
+      title,
+      latitude: place.lat,
+      longitude: place.lng,
+      area: place.address,
+      content: desc || "",
+      deposit: depositVal,
+      monthlyRent: rentVal,
+      minStayPeriod: stayVal,
+      houseType:
+        houseType && houseType !== "상관없음" ? mapHouseType[houseType] : null,
+      moveInDate:
+        moveInDate && moveInDate !== "상관없음"
+          ? toMoveInQuarter(moveInDate)
+          : null,
+    });
+
+    const fd = new FormData();
+    fd.append("meta", JSON.stringify(payload));
+
+    for (let i = 0; i < photos.length; i++) {
+      const p = photos[i];
+      try {
+        const resp = await fetch(p.uri);
+        const blob = await resp.blob();
+
+        fd.append(
+          "images",
+          blob as any,
+          p.fileName ?? `photo_${i}.${p.mimeType?.split("/")[1] || "jpg"}`
+        );
+      } catch (e) {
+        console.warn("이미지 Blob 변환 실패, 건너뜀:", p.uri, e);
+      }
+    }
+    try {
+      const res = await fetch("http://13.209.184.54:8080/api/roommate-posts", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: "JESSION=41e124da-d217-4742-8714-cf8366ecda0e",
+        },
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`POST ${res.status} ${errText}`);
+      }
+
+      router.replace("(tabs)/(matching)");
+      console.log(fd);
+    } catch (e) {
+      console.log("게시글 등록 실패:", e);
+      console.log(fd);
+    }
+  };
   return (
     <>
       <ScrollView
@@ -310,13 +415,13 @@ const RcWrite = () => {
             />
 
             <DropdownField
-              fieldKey="moveIn"
+              fieldKey="moveInDate"
               openKey={openKey}
               setOpenKey={setOpenKey}
               icon={<Calendar stroke={colors.blackSub1} />}
               placeholder="입주 희망 시기를 선택해주세요"
-              value={moveIn}
-              onChange={setMoveIn}
+              value={moveInDate}
+              onChange={setMoveInDate}
               options={moveInOptions}
             />
 
@@ -412,11 +517,7 @@ const RcWrite = () => {
         <PrimaryButton
           text="완료"
           active={isFormValid}
-          onPress={() => {
-            if (isFormValid) {
-              router.replace("(tabs)/(matching)");
-            }
-          }}
+          onPress={handleSubmit}
         />
       </View>
     </>

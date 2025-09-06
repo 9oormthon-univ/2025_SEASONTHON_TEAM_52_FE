@@ -4,7 +4,6 @@ import PrimaryButton from "../../components/PrimaryButton";
 import { router } from "expo-router";
 import colors from "../styles/colors";
 import { TEXT } from "../../constants/TextStyles";
-import Home_10 from "../../assets/svg/Home_10";
 
 type TypeChoice = "orange" | "blue" | null;
 
@@ -17,6 +16,17 @@ const SelectType = () => {
 
   const isOrangeActive = selected === "orange";
   const isBlueActive = selected === "blue";
+
+  const handleNext = () => {
+    if (!selected) return;
+    if (selected === "orange") {
+      // 같이 방을 구해요 → /api/roommate-posts → RcWrite
+      router.push("/recruit/RcWrite");
+    } else {
+      // 이미 방이 있어요 → /api/room-posts → MateWrite
+      router.push("/recruit/MateWrite");
+    }
+  };
 
   return (
     <>
@@ -90,7 +100,7 @@ const SelectType = () => {
         <PrimaryButton
           text="다음"
           active={selected !== null}
-          onPress={() => router.push("/recruit/RcWrite")}
+          onPress={handleNext}
         />
       </View>
     </>

@@ -57,11 +57,17 @@ const AuthIndex = () => {
       <PrimaryButton
         text="로그인"
         onPress={async () => {
-          await fetch("http://13.209.184.54:8080/auth/login", {
+          const res = await fetch("http://13.209.184.54:8080/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: "이시윤" }),
           });
+          const data = await res.json();
+          const sessionId = data?.data?.sessionId;
+          const userId = data?.data?.userId;
+
+          console.log("저장된 세션:", sessionId);
+          console.log("userId:", userId);
 
           const profileData = await fetch(
             "http://13.209.184.54:8080/auth/profile",
@@ -70,6 +76,7 @@ const AuthIndex = () => {
             }
           );
           const data2 = await profileData.json();
+
           console.log("프로필 에러?", data2.status === 400);
           if (data2.status === 400) router.push("/onboarding");
           else router.push("(tabs)/(home)");

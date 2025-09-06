@@ -99,39 +99,6 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
         >
-          {/* 룸메이트 성향 입력 */}
-          {isRoommate === false && (
-            <Pressable
-              style={styles.roommateBox}
-              onPress={() => {
-                router.push("/preferences");
-                setIsRoommate(true);
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 33.94,
-                }}
-              >
-                <Image
-                  source={require("../../../assets/icon/Write.png")}
-                  style={{ width: 75.82, height: 63.18 }}
-                />
-                <View>
-                  <Text style={[TEXT.body4, { color: colors.blackSub1 }]}>
-                    성향 매칭을 위해서는 필수예요
-                  </Text>
-                  <Text
-                    style={[TEXT.body22]}
-                  >{`내가 원하는\n룸메이트 성향 입력하기`}</Text>
-                </View>
-                <ChevronRight style={{ marginLeft: 8 }} />
-              </View>
-            </Pressable>
-          )}
-
           {/* 룸메이트 찾기 */}
           <View style={styles.contentBox}>
             <Pressable
@@ -240,20 +207,7 @@ const Home = () => {
                 </View>
               </View>
             </View>
-            <View style={{ paddingHorizontal: 8, gap: 10, marginBottom: 15 }}>
-              <Text style={[TEXT.body4, { color: colors.blackSub1 }]}>
-                프로필 작성 진행률
-              </Text>
-              <Progress.Bar
-                progress={0.9}
-                color={colors.mainColor}
-                borderWidth={0}
-                animated={false}
-                unfilledColor="#e6e6e6"
-                width={width - 100}
-                borderRadius={15}
-              />
-            </View>
+
             <ProfileFeatureGrid
               lifeCycle={profile.lifeCycle}
               smoking={profile.smoking}
@@ -399,7 +353,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   profileBox: {
-    height: 435,
+    height: 400,
     borderWidth: 1.5,
     borderRadius: 12,
     borderColor: "#ffffff",
