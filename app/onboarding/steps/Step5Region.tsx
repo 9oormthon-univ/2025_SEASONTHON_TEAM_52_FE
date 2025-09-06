@@ -12,45 +12,29 @@ import colors from "../../styles/colors";
 import { TEXT } from "../../../constants/TextStyles";
 import { Ionicons } from "@expo/vector-icons";
 
-const MOCK_REGIONS = [
-  "광진구 중곡1동",
-  "광진구 중곡2동",
-  "광진구 중곡3동",
-  "광진구 중곡4동",
-  "광진구 군자동",
-  "광진구 능동",
-  "광진구 화양동",
-  "광진구 자양1동",
-  "광진구 자양2동",
-  "광진구 자양3동",
-  "광진구 자양4동",
-  "광진구 구의1동",
-  "광진구 구의3동",
-  "광진구 구의2동",
-  "광진구 광장동",
-  "강남구 신사동",
-  "강남구 압구정동",
-  "강남구 논현1동",
-  "강남구 논현2동",
-  "강남구 청담동",
-  "강남구 역삼1동",
-  "강남구 역삼2동",
-  "강남구 개포1동",
-  "강남구 개포2동",
-  "강남구 개포3동",
-  "강남구 개포4동",
-  "강남구 일원본동",
-  "강남구 일원1동",
-  "강남구 수서동",
-  "강남구 세곡동",
-  "강남구 삼성1동",
-  "강남구 삼성2동",
-  "강남구 대치1동",
-  "강남구 대치2동",
-  "강남구 대치4동",
-  "강남구 도곡1동",
-  "강남구 도곡2동",
-];
+const MOCK_REGIONS = {
+  "강남구 대치동": 11680106,
+  "강남구 개포동": 11680103,
+  "강남구 세곡동": 11680111,
+  "강남구 신사동": 11680107,
+  "강남구 압구정동": 11680110,
+  "강남구 율현동": 11680113,
+  "강남구 일원동": 11680114,
+  "강남구 자곡동": 11680112,
+  "강남구 수서동": 11680115,
+  "강남구 삼성동": 11680105,
+  "강남구 논현동": 11680108,
+  "강남구 역삼동": 11680101,
+  "강남구 청담동": 11680104,
+  "강남구 도곡동": 11680118,
+  "광진구 자양동": 11215105,
+  "광진구 구의동": 11215103,
+  "광진구 화양동": 11215107,
+  "광진구 능동": 11215102,
+  "광진구 광장동": 11215104,
+  "광진구 군자동": 11215109,
+  "광진구 중곡동": 11215101,
+};
 
 export default function Step5Region({
   answers,
@@ -65,16 +49,22 @@ export default function Step5Region({
   const [selected, setSelected] = useState<string | null>(null);
   const router = useRouter();
 
-  const filtered = MOCK_REGIONS.filter((r) => r.includes(query));
+  const filtered = Object.keys(MOCK_REGIONS).filter((r) => r.includes(query));
 
   const handleSelect = (preferredLocationEmdCd: string) => {
     setSelected(preferredLocationEmdCd);
-    setAnswers((prev: any) => ({ ...prev, preferredLocationEmdCd }));
+    setAnswers((prev: any) => ({
+      ...prev,
+      preferredLocationEmdCd: MOCK_REGIONS[preferredLocationEmdCd],
+    }));
   };
 
   const handleRemove = () => {
     setSelected(null);
-    setAnswers((prev: any) => ({ ...prev, preferredLocationEmdCd: "" }));
+    setAnswers((prev: any) => ({
+      ...prev,
+      preferredLocationEmdCd: "",
+    }));
   };
 
   return (

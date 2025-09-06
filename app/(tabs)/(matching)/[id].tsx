@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Arrow_Left_5 from "../../../assets/svg/Arrow_Left_5";
@@ -274,7 +275,10 @@ export default function MatchingDetail() {
               안전을 위해 오차가 있어요
             </Text>
             <View style={styles.mapPlaceholder}>
-              <Text>지도 들어갈 자리</Text>
+              <Image
+                source={require("../../../assets/icon/dummyMap.png")} // 상대 경로
+                style={{ height: 200, resizeMode: "contain" }}
+              />
             </View>
           </View>
         )}
@@ -416,12 +420,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   mapPlaceholder: {
-    height: 200,
+    width: 345,
+    height: 180,
     backgroundColor: "#eee",
     marginTop: 12,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 12,
+    overflow: "hidden",
+    alignSelf: "center",
   },
   subTitleLine: {
     flexDirection: "row",

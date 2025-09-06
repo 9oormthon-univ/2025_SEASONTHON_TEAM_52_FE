@@ -60,7 +60,7 @@ const AuthIndex = () => {
           await fetch("http://13.209.184.54:8080/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: "서지우" }),
+            body: JSON.stringify({ username: "이시윤" }),
           });
 
           const profileData = await fetch(
@@ -69,7 +69,6 @@ const AuthIndex = () => {
               method: "GET",
             }
           );
-          console.log(profileData ? "true" : "false");
           const data2 = await profileData.json();
           console.log("프로필 에러?", data2.status === 400);
           if (data2.status === 400) router.push("/onboarding");

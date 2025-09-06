@@ -106,28 +106,52 @@ const cards = [
 ];
 const cardsWithRoom = [
   {
-    roommatePostId: 0,
-    userId: 0,
-    username: "string",
+    roommatePostId: 11121,
+    userId: 641,
+    username: "김고양",
     userProfile: "string",
-    age: 0,
-    mbti: "ENFP",
-    score: 0,
+    age: 24,
+    mbti: "ENTJ",
+    score: 85,
     matchedOptions: {
-      lifeCycle: "MORNING",
-      smoking: "NON_SMOKER",
-      cleanFreq: "OFTEN",
-      tidyLevel: "STRICT",
-      visitorPolicy: "ALLOWED",
-      restroomUsagePattern: "MORNING_SHOWER",
-      foodOdorPolicy: "ALLOWED",
-      homeStay: "MOSTLY_OUT",
-      noisePreference: "ALWAYS_QUIET",
-      sleepSensitivity: "SENSITIVE",
+      a: "청소 자주",
+      b: "야행성",
     },
-    title: "string",
-    deposit: 0,
-    monthlyRent: 0,
+    title: "절대 방해하지 않습니다",
+    deposit: 800,
+    monthlyRent: 40,
+  },
+  {
+    roommatePostId: 11122,
+    userId: 642,
+    username: "김왈왈",
+    userProfile: "string",
+    age: 22,
+    mbti: "ENTJ",
+    score: 80,
+    matchedOptions: {
+      a: "잠귀 둔감",
+      b: "흡연",
+    },
+    title: "재밌게 지내봐요!",
+    deposit: 500,
+    monthlyRent: 60,
+  },
+  {
+    roommatePostId: 11123,
+    userId: 643,
+    username: "김하악",
+    userProfile: "string",
+    age: 24,
+    mbti: "INTJ",
+    score: 90,
+    matchedOptions: {
+      a: "청결 예민",
+      b: "야행성",
+    },
+    title: "나 혼자 냅둬요",
+    deposit: 1000,
+    monthlyRent: 70,
   },
 ];
 const CARD_WIDTH = 260;
@@ -157,8 +181,20 @@ export default function MatchingScreen() {
   const [page, setPage] = useState<number>(0);
 
   const [profile, setProfile] = useState(emptyProfile);
+  const [roommatePosts, setRoomatePosts] = useState(cardsWithRoom);
   const [roomPosts, setRoomPosts] = useState(cardsWithRoom);
+  const [houseType, setHouseType] = useState<
+    "apartment" | "officetel" | "rowhouse"
+  >("officetel");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const houseTypeLabels = {
+    apartment: "아파트",
+    officetel: "오피스텔",
+    rowhouse: "빌라",
+  };
+
+  const [avgRent, setAvgRent] = useState<number | null>(null);
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -213,7 +249,7 @@ export default function MatchingScreen() {
         console.log("서버 응답:", data.data);
 
         // 서버 응답이 emptyProfile과 같은 형식이라고 가정
-        setRoomPosts(data.data);
+        setRoomPosts(data.data.length > 0 ? data.data : cardsWithRoom);
       } catch (err) {
         // fallback
         console.error("포스트 fetch 실패:", err);
@@ -222,6 +258,26 @@ export default function MatchingScreen() {
 
     getProfile();
   }, []);
+
+  useEffect(() => {
+    const fetchRent = async () => {
+      try {
+        const res = await fetch(
+          `http://13.209.184.54:8080/api/monthly-stats/${profile.preferredLocationEmdCd.slice(
+            0,
+            5
+          )}/type/${houseType}/latest`
+        );
+        if (!res.ok) throw new Error("월세 불러오기 실패");
+        const data = await res.json();
+        setAvgRent(data.avgMonthlyRent); // 서버 응답에 맞춰 필드명 확인
+      } catch (err) {
+        console.error("월세 fetch 실패:", err);
+        setAvgRent(null);
+      }
+    };
+    if (profile?.preferredLocationEmdCd) fetchRent();
+  }, [houseType, profile.preferredLocationEmdCd]);
 
   const handleScroll = (e: any) => {
     const offsetX = e.nativeEvent.contentOffset.x;
@@ -242,11 +298,8 @@ export default function MatchingScreen() {
             <Text style={styles.location}>
               {CodeToKorean[profile.preferredLocationEmdCd]}
             </Text>
-            <Down_Arrow_5
-              stroke={colors.black}
-              style={{ marginRight: "auto" }}
-            />
           </Pressable>
+          <Down_Arrow_5 stroke={colors.black} style={{ marginRight: "auto" }} />
           <View style={styles.headerIcons}>
             <Heart stroke={colors.black} />
             <Pressable onPress={() => router.push("recruit/SelectType")}>
@@ -267,21 +320,65 @@ export default function MatchingScreen() {
           }}
         >
           <View>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
-            >
-              <Text style={TEXT.body22}>오피스텔</Text>
-              <Down_Arrow_5
-                stroke={colors.black}
-                style={{ marginRight: "auto" }}
-              />
+            <View style={{ position: "relative" }}>
+              {/* 드롭다운 버튼 */}
+              <Pressable
+                onPress={() => setDropdownOpen((prev) => !prev)}
+                style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+              >
+                <Text style={TEXT.body22}>{houseTypeLabels[houseType]}</Text>
+                <Down_Arrow_5 stroke={colors.black} />
+              </Pressable>
+
+              {/* 드롭다운 메뉴 */}
+              {dropdownOpen && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 30,
+                    left: 0,
+                    backgroundColor: colors.white,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: colors.blackSub3,
+                    zIndex: 100,
+                  }}
+                >
+                  {Object.entries(houseTypeLabels).map(([key, label]) => (
+                    <Pressable
+                      key={key}
+                      onPress={() => {
+                        setHouseType(
+                          key as "apartment" | "officetel" | "rowhouse"
+                        );
+                        setDropdownOpen(false);
+                      }}
+                      style={{ padding: 12 }}
+                    >
+                      <Text
+                        style={[
+                          TEXT.body22,
+                          {
+                            color:
+                              houseType === key
+                                ? colors.mainColor
+                                : colors.black,
+                          },
+                        ]}
+                      >
+                        {label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
             </View>
             <View>
               <Text style={[TEXT.body2, { color: colors.black, marginTop: 4 }]}>
-                평균 월세는
+                평균 월세는{" "}
                 <Text style={[TEXT.title1, { color: colors.mainColor }]}>
-                  {` 약 82만원`}
-                </Text>
+                  {avgRent !== null ? `약 ${avgRent}만원` : "불러오는 중..."}
+                </Text>{" "}
                 이에요.
               </Text>
             </View>
@@ -358,7 +455,7 @@ export default function MatchingScreen() {
               router.push(
                 haveRoom
                   ? "/(tabs)/(matching)/roomPostList"
-                  : "/(tabs)/(matching)/roommatePostList"
+                  : "/(tabs)/(matching)/roomatePostList"
               )
             }
           >
@@ -367,7 +464,7 @@ export default function MatchingScreen() {
           </Pressable>
         </View>
         <FlatList
-          data={haveRoom ? roomPosts : roomPosts}
+          data={haveRoom ? roomPosts : roommatePosts}
           style={{ marginInline: -20 }}
           keyExtractor={(item) => item.roommatePostId.toString()}
           horizontal
@@ -425,8 +522,8 @@ export default function MatchingScreen() {
                     ? String(item.deposit)
                     : ""}{" "}
                   / 월세{" "}
-                  {"rent" in item && item.rent !== undefined
-                    ? String(item.rent)
+                  {"monthlyRent" in item && item.monthlyRent !== undefined
+                    ? String(item.monthlyRent)
                     : ""}
                 </Text>
               )}
