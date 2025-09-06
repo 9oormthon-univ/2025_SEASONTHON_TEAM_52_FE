@@ -89,8 +89,9 @@ const Home = () => {
 
           {/* 룸메이트 찾기 */}
           <View style={styles.contentBox}>
-            <View
+            <Pressable
               style={{ flexDirection: "row", alignItems: "center", gap: 20 }}
+              onPress={() => router.push("(tabs)/(matching)")}
             >
               <Image
                 source={require("../../../assets/icon/Puzzle.png")}
@@ -105,7 +106,7 @@ const Home = () => {
                 >{`나의 성향과\n맞는 룸메이트 찾기!`}</Text>
               </View>
               <ChevronRight style={{ marginLeft: 8 }} />
-            </View>
+            </Pressable>
           </View>
 
           {/* 프로필 카드 */}

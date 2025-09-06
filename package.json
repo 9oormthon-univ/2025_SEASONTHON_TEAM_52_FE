@@ -18,10 +18,13 @@
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.6",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-progress": "^5.0.1",
     "react-native-shadow-2": "^7.1.2",
-    "react-native-svg": "15.11.2"
+    "react-native-svg": "^15.11.2",
+    "victory": "^37.3.6",
+    "victory-native": "^41.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

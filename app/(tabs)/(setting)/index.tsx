@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
+import GoPreference from "../../../components/GoPreference";
 
 const Setting = () => {
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 20 }}>Setting</Text>
+      <GoPreference />
     </View>
   );
 };

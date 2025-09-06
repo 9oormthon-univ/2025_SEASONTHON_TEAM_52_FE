@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -130,36 +131,59 @@ export default function MatchingScreen() {
           </View>
         </View>
 
-        <View style={styles.houseFilter}>
-          <View style={styles.filterRow}>
-            {["아파트", "오피스텔", "빌라"].map((label, i) => (
-              <TouchableOpacity
-                key={i}
-                onPress={() => setSelectedBuilding(label)}
-                style={[
-                  styles.filterBtn,
-                  label == selectedBuilding && styles.filterActive,
-                ]}
-              >
-                <Text
-                  style={{
-                    ...TEXT.body4,
-                    color:
-                      label === selectedBuilding
-                        ? colors.mainColor
-                        : colors.blackSub1,
-                  }}
-                >
-                  {label}
+        {/* 뉴디자인 */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 55,
+            justifyContent: "center",
+            marginTop: 26,
+            marginBottom: 30,
+          }}
+        >
+          <View>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+            >
+              <Text style={TEXT.body22}>오피스텔</Text>
+              <Down_Arrow_5
+                stroke={colors.black}
+                style={{ marginRight: "auto" }}
+              />
+            </View>
+            <View>
+              <Text style={[TEXT.body2, { color: colors.black, marginTop: 4 }]}>
+                평균 월세는
+                <Text style={[TEXT.title1, { color: colors.mainColor }]}>
+                  {` 약 82만원`}
                 </Text>
-              </TouchableOpacity>
-            ))}
+                이에요.
+              </Text>
+            </View>
+            <Pressable
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 8,
+              }}
+              onPress={() => router.push("/statistics")}
+            >
+              <Text style={[TEXT.body4, { color: colors.blackSub1 }]}>
+                자세히보기
+              </Text>
+              <Right_Arrow
+                stroke={colors.blackSub1}
+                style={{
+                  marginRight: "auto",
+                  width: 10,
+                  height: 10,
+                  marginTop: 2,
+                }}
+              />
+            </Pressable>
           </View>
-          <Text style={[TEXT.body3, styles.notice]}>
-            {UserData.gu}에서 집을 구한다면, 평균 월세는 약{" "}
-            {UserData[selectedBuilding]}만원이에요.
-          </Text>
-          <Text style={[TEXT.body4, styles.lookMore]}>자세히 보기</Text>
+          <Image source={require("../../../assets/icon/building.png")} />
         </View>
 
         <View style={styles.tabHeader}>
