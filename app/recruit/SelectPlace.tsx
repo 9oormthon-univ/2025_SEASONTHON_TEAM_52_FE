@@ -1,90 +1,133 @@
-import { StyleSheet, Text, TextInput, View, Dimensions } from "react-native";
-import Search_4 from "../../assets/svg/Search_4";
-import { useState } from "react";
-import React from "react";
-import colors from "../styles/colors";
-import { TEXT } from "../../constants/TextStyles";
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import MapView, { Region } from "react-native-maps";
 import PrimaryButton from "../../components/PrimaryButton";
-import Cross from "../../assets/svg/Cross";
+import { TEXT } from "../../constants/TextStyles";
 
-const { height } = Dimensions.get("window");
+const API_KEY = "AIzaSyBsWJwLO5Z-djxRzMAPwgKNjmgOBOWv_Ig";
 
-const SelectPlace = () => {
-  const [search, setSearch] = useState("");
-
-  return (
-    <>
-      <View style={{ paddingTop: 50, flex: 1, paddingHorizontal: 20 }}>
-        <View style={styles.searchBar}>
-          <TextInput
-            style={[TEXT.body4, styles.input]}
-            placeholder="지역을 선택해주세요"
-            placeholderTextColor={colors.blackSub1}
-            value={search}
-            onChangeText={setSearch}
-          />
-          <Search_4 stroke={colors.blackSub1} width={28} height={28} />
-        </View>
-      </View>
-      <View style={styles.bottomCard}>
-        <View
-          style={{
-            marginTop: 25,
-            paddingHorizontal: 35,
-            marginBottom: 15,
-            gap: 11,
-          }}
-        >
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text style={[TEXT.body22, { color: colors.black }]}>
-              서울시 영등포구 당산동
-            </Text>
-            <Cross stroke={colors.black} />
-          </View>
-          <Text style={[TEXT.body3, { color: colors.black, marginTop: 4 }]}>
-            *오피스텔 평균 월세
-            <Text style={{ color: colors.mainColor }}> 82만원</Text>
-          </Text>
-        </View>
-        <View style={{ marginTop: 20 }}>
-          <PrimaryButton text="지역 선택하기" onPress={() => {}} />
-        </View>
-      </View>
-    </>
-  );
+type Props = {
+  onSelect: (payload: { lat: number; lng: number; address: string }) => void;
+  onCancel: () => void;
 };
 
-export default SelectPlace;
+export default function SelectPlace({ onSelect, onCancel }: Props) {
+  const mapRef = useRef<MapView>(null);
+  const [coord, setCoord] = useState({ lat: 37.5665, lng: 126.978 });
+  const [address, setAddress] = useState("서울특별시청 근처");
+
+  const handleRegionChange = async (region: Region) => {
+    const lat = Number(region.latitude.toFixed(7));
+    const lng = Number(region.longitude.toFixed(7));
+    setCoord({ lat, lng });
+    console.log(lat, lng);
+
+    const addr = await getDongAddress(lat, lng);
+    if (addr) setAddress(addr);
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* 지도 */}
+      <MapView
+        ref={mapRef}
+        style={{ flex: 1 }}
+        initialRegion={{
+          latitude: coord.lat,
+          longitude: coord.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        onRegionChangeComplete={handleRegionChange}
+      />
+
+      {/* 중앙 고정 핀 */}
+      <View style={styles.pinWrapper} pointerEvents="none">
+        <View style={styles.circlePin} />
+      </View>
+
+      {/* 하단 패널 */}
+      <View style={styles.bottomCard}>
+        <Text style={[TEXT.title1, { marginBottom: 12, alignSelf: "center" }]}>
+          {address || "주소 불러오는 중..."}
+        </Text>
+        <PrimaryButton
+          text="선택 완료"
+          onPress={() => onSelect({ ...coord, address })}
+        />
+        <PrimaryButton text="취소" onPress={onCancel} />
+      </View>
+    </View>
+  );
+}
+
+// ✅ Google API: 위도/경도 → "구 + 동"
+async function getDongAddress(lat: number, lng: number) {
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=ko&key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  console.log("API 응답:", JSON.stringify(data, null, 2));
+
+  if (data.status !== "OK") {
+    console.error("Google API Error:", data.status);
+    return null;
+  }
+
+  if (!data.results.length) {
+    console.warn("주소 결과 없음:", lat, lng);
+    return null;
+  }
+
+  // 첫 번째 결과
+  const comps = data.results[0].address_components;
+  // 동
+  const dongComp =
+    comps.find((c: any) => c.types.includes("sublocality_level_2")) ||
+    comps.find((c: any) => c.types.includes("sublocality_level_1"));
+
+  // 구
+  const guComp =
+    comps.find((c: any) => c.types.includes("administrative_area_level_2")) ||
+    comps.find((c: any) => c.types.includes("sublocality_level_1")); // 📌 fallback 추가
+
+  if (!dongComp || !guComp) {
+    console.warn("동/구 정보 없음:", comps);
+    return null;
+  }
+
+  let dongName = dongComp.long_name.replace(/\d+(?=동$)/, "");
+  let guName = guComp.long_name;
+
+  return `${guName === dongName ? "" : `${guName} `}${dongName}`;
+}
 
 const styles = StyleSheet.create({
-  searchBar: {
-    height: 60,
-    borderRadius: 12,
-    boxShadow: "2px 2px 4px 0 rgba(0, 0, 0, 0.25)",
-    backgroundColor: "#fff",
-    paddingHorizontal: 18,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  pinWrapper: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -10 }, { translateY: -10 }],
+    zIndex: 10,
   },
-  input: {
-    flex: 1,
-    color: colors.black,
+  circlePin: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "red",
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   bottomCard: {
-    width: "100%",
-    height: 221,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    paddingVertical: 24,
-    boxShadow: "-2px -2px 4px 0 rgba(0, 0, 0, 0.25)",
-    position: "absolute", // ✅ absolute 배치
-    bottom: 0, // ✅ 화면 하단에 고정
+    position: "absolute",
+    bottom: 0,
     left: 0,
-    flex: 1,
+    right: 0,
+    backgroundColor: "#fff",
+    padding: 24,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    elevation: 5,
+    gap: 12,
   },
 });

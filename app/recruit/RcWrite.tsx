@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   Platform,
+  Modal,
 } from "react-native";
 import colors from "../styles/colors";
 import { TEXT } from "../../constants/TextStyles";
@@ -25,6 +26,7 @@ import Stopwatch from "../../assets/svg/Stopwatch";
 import Money_Bag from "../../assets/svg/Money_Bag";
 import Checkbox from "expo-checkbox";
 import * as ImagePicker from "expo-image-picker";
+import SelectPlace from "./SelectPlace";
 
 function DropdownField({
   icon,
@@ -114,6 +116,13 @@ const RcWrite = () => {
   const MAX_PHOTOS = 10;
   const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
+  const [place, setPlace] = useState<{
+    lat: number;
+    lng: number;
+    address: string;
+  } | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const isFormValid =
     title.trim().length > 0 &&
     deposit.trim().length > 0 &&
@@ -199,14 +208,14 @@ const RcWrite = () => {
             />
             <Pressable
               style={[styles.field]}
-              onPress={() => router.push("/recruit/SelectPlace")}
+              onPress={() => setModalVisible(true)}
             >
               <View
                 style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
               >
                 <MapPin stroke="#8c8c8c" />
                 <Text style={[TEXT.body4, { color: colors.black }]}>
-                  서울시 영등포구 당산동
+                  {place?.address || "지역을 선택해주세요"}
                 </Text>
               </View>
             </Pressable>
@@ -390,6 +399,15 @@ const RcWrite = () => {
           </View>
         </View>
       </ScrollView>
+      <Modal visible={modalVisible} animationType="slide">
+        <SelectPlace
+          onSelect={(payload) => {
+            setPlace(payload); // 주소 + 좌표 저장
+            setModalVisible(false); // 모달 닫기
+          }}
+          onCancel={() => setModalVisible(false)}
+        />
+      </Modal>
       <View style={{ paddingHorizontal: 20 }}>
         <PrimaryButton
           text="완료"
