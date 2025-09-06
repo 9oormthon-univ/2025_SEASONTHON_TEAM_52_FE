@@ -119,9 +119,11 @@ export default function MatchingScreen() {
       {/* 상단 헤더 */}
       <View style={styles.topSection}>
         <View style={styles.header}>
-          <Text style={styles.location}>
-            {UserData.gu} {UserData.dong}
-          </Text>
+          <Pressable onPress={() => router.push("/(map)")}>
+            <Text style={styles.location}>
+              {UserData.gu} {UserData.dong}
+            </Text>
+          </Pressable>
           <Down_Arrow_5 stroke={colors.black} style={{ marginRight: "auto" }} />
           <View style={styles.headerIcons}>
             <Heart stroke={colors.black} />

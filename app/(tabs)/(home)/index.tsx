@@ -17,17 +17,64 @@ import ChevronRight from "../../../assets/svg/ChevronRight";
 import * as Progress from "react-native-progress";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const { height } = Dimensions.get("window");
 const { width } = Dimensions.get("window");
 //shadow 수정 필요
 
+const emptyProfile = {
+  userId: 1,
+  username: "두둥탁",
+  age: 25,
+  gender: "MALE",
+  introduction: "안녕하세요! 깔끔하고 조용한 룸메이트를 찾고 있습니다.",
+  preferredLocationEmdCd: "1168010100",
+  hasSpace: false,
+  kakaoOpenChatLink: "https://open.kakao.com/...",
+  isActive: false,
+  lifeCycle: "MORNING",
+  tidyLevel: "STRICT",
+  smoking: "NON_SMOKER",
+  noisePreference: "ALWAYS_QUIET",
+  isDesired: true,
+};
 const Home = () => {
   const [isRoommate, setIsRoommate] = useState(false);
 
+  const [profile, setProfile] = useState(emptyProfile);
+
   const insets = useSafeAreaInsets();
   const TAB_HEIGHT = 20;
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const res = await fetch("http://13.209.184.54:8080/auth/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // 필요하다면 Authorization 헤더 추가
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("프로필 불러오기 실패");
+        }
+
+        const data = await res.json();
+        console.log("서버 응답:", data);
+
+        // 서버 응답이 emptyProfile과 같은 형식이라고 가정
+        setProfile(data);
+      } catch (err) {
+        console.error("프로필 요청 에러:", err);
+        // fallback
+        setProfile(emptyProfile);
+      }
+    };
+
+    getProfile();
+  }, []);
   return (
     <>
       <LinearGradient
@@ -59,7 +106,7 @@ const Home = () => {
             <Pressable
               style={styles.roommateBox}
               onPress={() => {
-                router.push("/preferences/1");
+                router.push("/preferences");
                 setIsRoommate(true);
               }}
             >
@@ -120,11 +167,13 @@ const Home = () => {
               }}
             >
               <Text style={TEXT.title1}>프로필</Text>
-              <View style={styles.statusButton}>
-                <Text style={[TEXT.body4, { color: colors.mainColor }]}>
-                  매칭중
-                </Text>
-              </View>
+              {profile.isActive && (
+                <View style={styles.statusButton}>
+                  <Text style={[TEXT.body4, { color: colors.mainColor }]}>
+                    매칭중
+                  </Text>
+                </View>
+              )}
             </View>
             <View style={{ marginBottom: 30 }}>
               <View
@@ -166,15 +215,17 @@ const Home = () => {
                           lineHeight: 24,
                         }}
                       >
-                        박구름
+                        {profile.username}
                       </Text>
                       <ShieldCheck />
                     </View>
                     <ChevronRight />
                   </View>
                   <View style={{ flexDirection: "row", gap: 13 }}>
-                    <Text style={TEXT.body3}>28세</Text>
-                    <Text style={TEXT.body3}>여</Text>
+                    <Text style={TEXT.body3}>{profile.age}세</Text>
+                    <Text style={TEXT.body3}>
+                      {profile.gender === "MALE" ? "남" : "여"}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -184,7 +235,9 @@ const Home = () => {
                     }}
                   >
                     <MapPin />
-                    <Text style={TEXT.body3}>서울시 영등포구 당산동</Text>
+                    <Text style={TEXT.body3}>
+                      {profile.preferredLocationEmdCd}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -204,10 +257,10 @@ const Home = () => {
               />
             </View>
             <ProfileFeatureGrid
-              lifeCycle="MORNING"
-              smoking="NON_SMOKER"
-              cleanFreq="OFTEN"
-              tidyLevel="STRICT"
+              lifeCycle={profile.lifeCycle}
+              smoking={profile.smoking}
+              noisePreference={profile.noisePreference}
+              tidyLevel={profile.tidyLevel}
             />
           </View>
 

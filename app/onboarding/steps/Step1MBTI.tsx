@@ -38,9 +38,11 @@ const MBTI_OPTIONS = [
 export default function Step1MBTI({
   answers,
   setAnswers,
+  setStepNum,
 }: {
-  answers: { [key: string]: string };
-  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  answers: { [key: string]: any };
+  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  setStepNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [selected, setSelected] = useState<{ [key: string]: string }>({});
   const router = useRouter();
@@ -49,6 +51,19 @@ export default function Step1MBTI({
 
   const handleSelect = (group: string, value: string) => {
     setSelected((prev) => ({ ...prev, [group]: value }));
+  };
+  const handleNext = () => {
+    // 선택된 값들을 MBTI 순서대로 이어붙임
+    const mbti = MBTI_OPTIONS.map((opt) => selected[opt.group]).join("");
+
+    console.log("selected MBTI:", mbti);
+    // answers.mbti 업데이트
+    setAnswers((prev) => ({
+      ...prev,
+      mbti,
+    }));
+
+    setStepNum((prev) => prev + 1);
   };
 
   return (
@@ -106,7 +121,7 @@ export default function Step1MBTI({
           styles.nextBtn,
           !allSelected && { backgroundColor: colors.blackSub4 },
         ]}
-        onPress={() => router.push("/onboarding/2")}
+        onPress={handleNext}
       >
         <Text
           style={[

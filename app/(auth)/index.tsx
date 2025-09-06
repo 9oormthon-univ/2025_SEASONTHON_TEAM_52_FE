@@ -56,7 +56,25 @@ const AuthIndex = () => {
       </View>
       <PrimaryButton
         text="로그인"
-        onPress={() => router.push("/onboarding/[step]")}
+        onPress={async () => {
+          await fetch("http://13.209.184.54:8080/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: "두둥탁10" }),
+          });
+
+          const profileData = await fetch(
+            "http://13.209.184.54:8080/auth/profile",
+            {
+              method: "GET",
+            }
+          );
+          console.log(profileData ? "true" : "false");
+          const data2 = await profileData.json();
+          console.log("프로필 에러?", data2.status === 400);
+          if (data2.status === 400) router.push("/onboarding");
+          else router.push("(tabs)/(home)");
+        }}
       />
       <View
         style={{

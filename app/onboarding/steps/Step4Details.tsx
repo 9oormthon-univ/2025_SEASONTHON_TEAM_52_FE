@@ -13,21 +13,23 @@ import { TEXT } from "../../../constants/TextStyles";
 export default function Step4FreeText({
   answers,
   setAnswers,
+  setStepNum,
 }: {
-  answers: { [key: string]: string };
-  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  answers: { [key: string]: any };
+  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  setStepNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const router = useRouter();
   const [text, setText] = useState(answers.freeText || "");
 
   const handleNext = () => {
     setAnswers((prev) => ({ ...prev, freeText: text }));
-    router.push("/onboarding/5");
+    setStepNum((prev) => prev + 1);
   };
 
   const handleSkip = () => {
     setAnswers((prev) => ({ ...prev, freeText: "" }));
-    router.push("/onboarding/5");
+    setStepNum((prev) => prev + 1);
   };
 
   return (

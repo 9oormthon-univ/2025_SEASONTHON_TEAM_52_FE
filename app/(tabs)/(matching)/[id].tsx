@@ -85,7 +85,9 @@ export default function MatchingDetail() {
     "룸메이트 정보" | "방정보" | "집위치" | "후기"
   >("룸메이트 정보");
 
-  const data = postData.find((p) => p.id === Number(id));
+  const data = postData.some((p) => p.id === Number(id))
+    ? postData.find((p) => p.id === Number(id))
+    : postData[0];
 
   function getObjectParticle(word: string): string {
     const lastChar = word.charCodeAt(word.length - 1);

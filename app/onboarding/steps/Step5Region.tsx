@@ -52,21 +52,29 @@ const MOCK_REGIONS = [
   "강남구 도곡2동",
 ];
 
-export default function Step5Region({ answers, setAnswers }) {
+export default function Step5Region({
+  answers,
+  setAnswers,
+  setStepNum,
+}: {
+  answers: { [key: string]: any };
+  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  setStepNum: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const router = useRouter();
 
   const filtered = MOCK_REGIONS.filter((r) => r.includes(query));
 
-  const handleSelect = (region: string) => {
-    setSelected(region);
-    setAnswers((prev: any) => ({ ...prev, region }));
+  const handleSelect = (preferredLocationEmdCd: string) => {
+    setSelected(preferredLocationEmdCd);
+    setAnswers((prev: any) => ({ ...prev, preferredLocationEmdCd }));
   };
 
   const handleRemove = () => {
     setSelected(null);
-    setAnswers((prev: any) => ({ ...prev, region: "" }));
+    setAnswers((prev: any) => ({ ...prev, preferredLocationEmdCd: "" }));
   };
 
   return (
@@ -135,8 +143,13 @@ export default function Step5Region({ answers, setAnswers }) {
           styles.nextBtn,
           !selected && { backgroundColor: colors.blackSub4 },
         ]}
-        onPress={() => {
-          console.log("최종 답변:", answers);
+        onPress={async () => {
+          await fetch("http://13.209.184.54:8080/onboards", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(answers),
+          });
+
           router.replace("/(tabs)/(home)");
         }}
       >

@@ -1,48 +1,65 @@
-import { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import colors from "../../styles/colors";
 import { TEXT } from "../../../constants/TextStyles";
+import Checkbox from "expo-checkbox";
 
 const QUESTIONS = [
   {
-    key: "sleep",
+    key: "lifeCycleValue",
     question: "🛌 취침시간은 어떻게 되나요?",
-    options: ["22시 이전", "22시~24시", "24시 이후", "유동적"],
+    options: ["22시 이전", "22시~24시", "24시 이후"],
+    requiredField: "lifeCycleRequired",
+    enums: {
+      "22시 이전": "MORNING",
+      "22시~24시": "NORMAL",
+      "24시 이후": "NIGHT_OWL",
+    },
   },
   {
-    key: "smoking",
+    key: "smokingValue",
     question: "🚬 흡연은 하시나요?",
     options: ["비흡연", "흡연"],
+    requiredField: "smokingRequired",
+    enums: { 비흡연: "NON_SMOKER", 흡연: "SMOKER" },
   },
   {
-    key: "cleaning",
+    key: "cleanFreqValue",
     question: "🧹 청소주기는 어떻게 되나요?",
     options: ["자주", "1주일", "필요할때만"],
+    requiredField: "cleanFreqRequired",
+    enums: { 자주: "OFTEN", "1주일": "WEEKLY", 필요할때만: "WHEN_NEEDED" },
   },
   {
-    key: "pet",
+    key: "tidyLevelValue",
     question: "🫧 청결기준이 있나요?",
     options: ["엄격", "보통", "대충"],
+    requiredField: "tidyLevelRequired",
+    enums: { 엄격: "STRICT", 보통: "NORMAL", 대충: "RELAXED" },
   },
   {
-    key: "guest",
+    key: "visitorPolicyValue",
     question: "🙋‍♀️ 외부인 방문은 어떻게 생각하시나요?",
     options: ["가능", "제한적", "불가"],
+    requiredField: "visitorPolicyRequired",
+    enums: { 가능: "ALLOWED", 제한적: "LIMITED", 불가: "FORBIDDEN" },
   },
 ];
 
 export default function PrefStep1({
   answers,
   setAnswers,
+  setStepNum,
 }: {
-  answers: { [key: string]: string };
-  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  answers: { [key: string]: any };
+  setAnswers: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  setStepNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const router = useRouter();
-
-  const allSelected = Object.keys(answers).length === QUESTIONS.length;
-
   return (
     <View style={styles.container}>
       <Text style={[TEXT.title1, styles.title]}>
@@ -58,44 +75,74 @@ export default function PrefStep1({
       </View>
       {QUESTIONS.map((q) => (
         <View key={q.key} style={{ marginBottom: 16 }}>
-          <Text style={TEXT.body2}>{q.question}</Text>
-          <View style={styles.row}>
-            {q.options.map((opt) => (
-              <TouchableOpacity
-                key={opt}
-                style={[
-                  styles.option,
-                  answers[q.key] === opt && styles.selected,
-                ]}
-                onPress={() =>
-                  setAnswers((prev) => ({ ...prev, [q.key]: opt }))
+          <View style={{ flexDirection: "row", gap: 14, alignItems: "center" }}>
+            <Text style={TEXT.body2}>{q.question}</Text>
+            <Pressable
+              style={styles.checkRow}
+              onPress={() =>
+                setAnswers((prev) => ({
+                  ...prev,
+                  [q.requiredField]: !answers[q.requiredField],
+                }))
+              }
+            >
+              <Text style={TEXT.body2}>필수</Text>
+              <Checkbox
+                style={{ borderRadius: 5, borderColor: colors.blackSub2 }}
+                value={answers[q.requiredField]}
+                onValueChange={() =>
+                  setAnswers((prev) => ({
+                    ...prev,
+                    [q.requiredField]: !answers[q.requiredField],
+                  }))
                 }
-              >
-                <Text
-                  style={[
-                    TEXT.body3,
-                    answers[q.key] === opt && styles.selectedText,
-                  ]}
+                color={answers[q.requiredField] ? colors.mainColor : undefined}
+              />
+            </Pressable>
+          </View>
+          <View style={styles.row}>
+            {q.options.map((opt) => {
+              const value = q.enums[opt] || opt;
+              const isSelected = answers[q.key] === value;
+
+              return (
+                <TouchableOpacity
+                  key={opt}
+                  style={[styles.option, isSelected && styles.selected]}
+                  onPress={() =>
+                    setAnswers((prev) => ({
+                      ...prev,
+                      [q.key]: value,
+                    }))
+                  }
                 >
-                  {opt}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text style={[TEXT.body3, isSelected && styles.selectedText]}>
+                    {opt}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       ))}
       <TouchableOpacity
-        disabled={!allSelected}
+        disabled={QUESTIONS.some((q) => answers[q.key] === "")}
         style={[
           styles.nextBtn,
-          !allSelected && { backgroundColor: colors.blackSub4 },
+          QUESTIONS.some((q) => answers[q.key] === "") && {
+            backgroundColor: colors.blackSub4,
+          },
         ]}
-        onPress={() => router.push("/preferences/2")}
+        onPress={() => setStepNum((prev) => prev + 1)}
       >
         <Text
           style={[
             TEXT.body22,
-            { color: allSelected ? colors.white : colors.blackSub1 },
+            {
+              color: !QUESTIONS.some((q) => answers[q.key] === "")
+                ? colors.white
+                : colors.blackSub1,
+            },
           ]}
         >
           다음
@@ -134,6 +181,11 @@ const styles = StyleSheet.create({
     borderColor: colors.mainSub1,
   },
   selectedText: { color: colors.mainColor },
+  checkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   nextBtn: {
     marginTop: "auto",
     marginBottom: 40,
