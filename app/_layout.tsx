@@ -1,6 +1,7 @@
 import { Slot } from "expo-router";
 import { useFonts } from "expo-font";
 import { UserProvider } from "../context/UserContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -8,8 +9,10 @@ export default function RootLayout() {
     Ownglyph: require("../assets/fonts/ownglyph.ttf"),
   });
   return (
-    <UserProvider>
-      <Slot />
-    </UserProvider>
+    <SafeAreaProvider>
+      <UserProvider>
+        <Slot />
+      </UserProvider>
+    </SafeAreaProvider>
   );
 }
