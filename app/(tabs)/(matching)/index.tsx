@@ -242,8 +242,11 @@ export default function MatchingScreen() {
             <Text style={styles.location}>
               {CodeToKorean[profile.preferredLocationEmdCd]}
             </Text>
+            <Down_Arrow_5
+              stroke={colors.black}
+              style={{ marginRight: "auto" }}
+            />
           </Pressable>
-          <Down_Arrow_5 stroke={colors.black} style={{ marginRight: "auto" }} />
           <View style={styles.headerIcons}>
             <Heart stroke={colors.black} />
             <Pressable onPress={() => router.push("recruit/SelectType")}>
@@ -351,7 +354,13 @@ export default function MatchingScreen() {
               flexDirection: "row",
               alignItems: "center",
             }}
-            onPress={() => router.push("/(tabs)/(matching)/list")}
+            onPress={() =>
+              router.push(
+                haveRoom
+                  ? "/(tabs)/(matching)/roomPostList"
+                  : "/(tabs)/(matching)/roommatePostList"
+              )
+            }
           >
             <Text style={styles.more}>더보기 </Text>
             <Right_Arrow stroke={colors.blackSub1} />

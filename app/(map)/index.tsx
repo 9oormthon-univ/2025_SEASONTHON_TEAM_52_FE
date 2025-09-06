@@ -83,6 +83,8 @@ export default function RegionSelect() {
   const [profile, setProfile] = useState(emptyProfile);
   const router = useRouter();
 
+  const [geoCode, setGeoCode] = useState(0);
+
   const data = Object.keys(KoreanToCode).filter((item) =>
     item.includes(search)
   );
@@ -108,6 +110,7 @@ export default function RegionSelect() {
         // 서버 응답이 emptyProfile과 같은 형식이라고 가정
         setProfile(data);
         setSelectedGu(CodeToKorean[data.preferredLocationEmdCd]);
+        setGeoCode(data.preferredLocationEmdCd);
       } catch (err) {
         // fallback
         console.error("프로필 fetch 실패:", err);
@@ -124,7 +127,7 @@ export default function RegionSelect() {
       {/* 지도 */}
       <View style={styles.mapWrapperWrapper}>
         <View style={styles.mapWrapper}>
-          <SeoulMap selected={selectedGu} onSelect={setSelectedGu} />
+          <SeoulMap code={geoCode} />
         </View>
       </View>
 
@@ -184,6 +187,7 @@ export default function RegionSelect() {
                 style={styles.option}
                 onPress={() => {
                   setSelectedGu(item);
+                  setGeoCode(KoreanToCode[item]);
                   setModalVisible(false);
                   setSearch("");
                 }}
